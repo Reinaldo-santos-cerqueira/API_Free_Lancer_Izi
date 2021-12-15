@@ -2,6 +2,8 @@
 
 header('Content-Type: application/json; charset:utf-8');
 require_once 'class/client.php';
+require_once 'class/service.php';
+
 
 class Rest
 {
