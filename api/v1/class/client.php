@@ -59,12 +59,12 @@
             return $this->password;
         }
 
-        public function setPhone( int $phone ) :void
+        public function setPhone( string $phone ) :void
         {
             $this->phone    = $phone;
         }
 
-        public function getPhone() :int
+        public function getPhone() :string
         {
             return $this->phone;
         }
@@ -254,5 +254,31 @@
                 throw new Exception("Login incorreto",1);
             }
             return $result;
+        }
+        public function tradePassword(){
+            $data   =   json_decode(file_get_contents("php://input"),true);
+            $this->setPassword($data['password']);
+            $this->setId($data['id']);
+            $con = $this->connection();
+            $sqltext = "UPDATE person SET password = :_password where id = :_id";
+            $sqlcon = $con->prepare($sqltext);
+            $sqlcon->bindValue(':_password', $this->getPassword(), \PDO::PARAM_STR);
+            $sqlcon->bindValue(':_id', $this->getId(), \PDO::PARAM_INT);
+            $sqlcon -> execute();
+            if($sqlcon -> execute()){
+                $this->setId($data['id']);
+                $con = $this->connection();
+                $sql1 = "SELECT * from person WHERE id = :_id";
+                $sql = $con->prepare($sql1);
+                $sql->bindValue(':_id', $this->getId(), \PDO::PARAM_INT);
+                $sql -> execute();
+        
+                $result = array();
+        
+                while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+                    $result[] = $row;
+                }
+                return $result;
+            }
         }
     }

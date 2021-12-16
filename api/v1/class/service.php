@@ -166,6 +166,26 @@
                 echo json_encode("Informe  um id para fazer a exclusão");
             } 
         }
+        public function searchName($parameter){
+            if($parameter != null){
+                $sql = "SELECT * from service where title like '%".$parameter[0]."%'";
+                $con = $this->connection();
+                $sql = $con->query($sql);
+                $sql -> execute();
+    
+                $result = array();
+    
+                while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+                    $result[] = $row;
+                }
+                if(!$result){
+                    throw new Exception("Nenhum servico encontrado",1);
+                }
+                return $result;
+
+            }
+
+        }
     }
 
 ?>
