@@ -6,7 +6,8 @@
         private $title;
         private $description;
         private $value;
-        private $idPerson;
+        private $idProvider;
+        private $idClient;
 
         public function setId( int $id) : void
         {
@@ -18,15 +19,26 @@
             return $this->id;
         }
 
-        public function setIdPerson( int $idPerson) : void
+        public function setIdClient( int $idClient) : void
         {
-            $this->idPerson    = $idPerson;
+            $this->idClient    = $idClient;
         }
 
-        public function getIdPerson() :int 
+        public function getIdClient() :int 
         {
-            return $this->idPerson;
+            return $this->idClient;
         }
+
+        public function setIdProvider( int $idProvider) : void
+        {
+            $this->idProvider    = $idProvider;
+        }
+
+        public function getIdProvider() :int 
+        {
+            return $this->idProvider;
+        }
+
 
         public function setValue( int $value) : void
         {
@@ -67,7 +79,7 @@
             $this->setTitle($data['title']);
             $this->setDescription($data['description']);
             $this->setValue($data['value']);
-            $this->setIdPerson($data['idPerson']);
+            $this->setIdProvider($data['idPerson']);
             $con = $this->connection();
 
             $sqlText = "INSERT INTO service (title, description, value, idPerson) VALUES (:_title, :_description, :_value, :_idPerson)";
@@ -75,7 +87,7 @@
             $sqlcon->bindValue(':_title',$this->getTitle(), \PDO::PARAM_STR);
             $sqlcon->bindValue(':_description',$this->getDescription(), \PDO::PARAM_STR);
             $sqlcon->bindValue(':_value',$this->getValue(), \PDO::PARAM_INT);
-            $sqlcon->bindValue(':_idPerson',$this->getIdPerson(), \PDO::PARAM_INT);
+            $sqlcon->bindValue(':_idPerson',$this->getIdProvider(), \PDO::PARAM_INT);
             if($sqlcon -> execute()){
                 $this->setId($con->lastInsertId());
                 $con = $this->connection();
@@ -93,10 +105,9 @@
         }
         public function read($parameter){
             if($parameter != null){
-                $sql = "SELECT * from service where idPerson = ".$parameter[0];
-
+                $sql = " SELECT *, ( SELECT name FROM person p WHERE p.id = idProvider ) as nome_provider, ( SELECT email FROM person p WHERE p.id = idProvider ) as email_provider,( SELECT name FROM person c WHERE c.id = idClient ) as nome_client,( SELECT email FROM person c WHERE c.id = idClient ) as email_client FROM service WHERE id = ".$parameter[0];
             }else{
-                $sql = "SELECT * from service ORDER BY id ASC";
+                $sql = " SELECT *, ( SELECT name FROM person p WHERE p.id = idProvider ) as nome_provider, ( SELECT email FROM person p WHERE p.id = idProvider ) as email_provider,( SELECT name FROM person c WHERE c.id = idClient ) as nome_client,( SELECT email FROM person c WHERE c.id = idClient ) as email_client FROM service";
             }
             $con = $this->connection();
             $sql = $con->query($sql);
